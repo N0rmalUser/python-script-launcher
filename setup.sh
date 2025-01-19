@@ -1,12 +1,30 @@
 #!/bin/bash
 
+SCRIPT1_NAME="start"
+SCRIPT2_NAME="stop"
+
+
 if [[ $EUID -ne 0 ]]; then
     echo "Этот скрипт должен быть запущен от имени администратора (root)."
     exit 1
 fi
 
-SCRIPT1_NAME="start"
-SCRIPT2_NAME="stop"
+if ! command -v fzf &> /dev/null; then
+    echo "Установка fzf..."
+    if [[ -x "$(command -v apt)" ]]; then
+        apt update
+        apt install -y fzf
+    elif [[ -x "$(command -v yum)" ]]; then
+        yum install -y fzf
+    elif [[ -x "$(command -v brew)" ]]; then
+        brew install fzf
+    else
+        echo "Не удалось найти подходящий пакетный менеджер для установки fzf."
+        exit 1
+    fi
+else
+    echo "fzf уже установлен."
+fi
 
 SCRIPT1_CONTENT='#!/bin/bash
 
